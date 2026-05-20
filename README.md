@@ -17,12 +17,11 @@ It calls the real APIs (zero Python dependencies — stdlib only). If a key is m
 
 ### Option A — as a plugin (recommended for teams)
 
-1. Push this folder to a git repo (e.g. GitHub).
-2. In Claude Code:
-   ```
-   /plugin marketplace add <your-git-repo-url>
-   /plugin install cross-platform-router@cross-platform-router-marketplace
-   ```
+In Claude Code:
+```
+/plugin marketplace add baganseana/cross-platform-router
+/plugin install cross-platform-router@cross-platform-router-marketplace
+```
 3. Set your API keys:
    ```
    bash "$(claude plugin path cross-platform-router)/setup_keys.sh"
