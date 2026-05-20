@@ -81,9 +81,21 @@ can also live server-side in the Cloudflare MCP (Workers KV) so claude.ai web/mo
 Sections: **About / Business · Preferences & Voice · Active Projects & Decisions · Glossary & People**.
 
 ### Initial sync (first time)
-If `MEMORY.md` still has `<placeholder>` lines, run a short interview to populate it — ask about the
-user's business/role, voice preferences, active projects, and key people/terms. Write concise
-one-bullet facts into the matching sections.
+If `MEMORY.md` still has `<placeholder>` lines, populate it in two passes:
+
+1. **Read the user's existing Claude memory first.** Check these and extract durable, broadly-useful
+   facts (identity, role, company, projects, stable preferences):
+   ```bash
+   cat ~/.claude/CLAUDE.md 2>/dev/null
+   find ~/.claude/projects -maxdepth 3 -path "*/memory/*.md" 2>/dev/null
+   find ~/Documents -maxdepth 4 -iname "CLAUDE.md" 2>/dev/null
+   ```
+   Pull facts into the matching sections. Don't copy ephemeral or project-internal-only details.
+2. **Then interview the user for the gaps** — anything the files didn't cover, especially voice/tone
+   preferences and current priorities. Ask a few focused questions, write concise one-bullet facts,
+   and confirm before finalizing.
+
+After populating, if the server sync is configured, run `sync_memory.py push`.
 
 ### Auto-capture (regular updates)
 When the user states a durable fact, preference, or decision ("we always…", "remember that…",
