@@ -15,6 +15,8 @@ import sys
 import urllib.error
 import urllib.request
 
+from _memory import wrap_with_memory
+
 DEFAULT_MODEL = "gemini-2.5-flash"  # free-tier friendly. Use --model gemini-2.5-pro w/ billing.
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -46,6 +48,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Call Google Gemini.")
     p.add_argument("prompt", help="Prompt text, or '-' to read from stdin")
     p.add_argument("--model", default=DEFAULT_MODEL, help=f"Default: {DEFAULT_MODEL}")
+    p.add_argument("--no-memory", action="store_true", help="Don't inject shared memory")
     args = p.parse_args()
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -56,6 +59,7 @@ def main() -> None:
     if not prompt.strip():
         raise SystemExit("[input] Empty prompt.")
 
+    prompt = wrap_with_memory(prompt, enabled=not args.no_memory)
     print(call_gemini(prompt, args.model, api_key))
 
 

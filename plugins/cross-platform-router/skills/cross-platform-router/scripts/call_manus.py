@@ -27,6 +27,8 @@ import time
 import urllib.error
 import urllib.request
 
+from _memory import wrap_with_memory
+
 API_BASE = "https://api.manus.ai/v2"
 DEFAULT_PROFILE = "manus-1.6"  # also: manus-1.6-lite (cheap/fast), manus-1.6-max (best)
 
@@ -105,6 +107,7 @@ def main() -> None:
     p.add_argument("--timeout", type=int, default=240, help="Max seconds to poll (default 240)")
     p.add_argument("--interval", type=int, default=5, help="Poll interval seconds (default 5)")
     p.add_argument("--profile", default=DEFAULT_PROFILE, help=f"agent_profile (default {DEFAULT_PROFILE})")
+    p.add_argument("--no-memory", action="store_true", help="Don't inject shared memory")
     args = p.parse_args()
 
     api_key = os.environ.get("MANUS_API_KEY")
@@ -123,6 +126,7 @@ def main() -> None:
     if not prompt.strip():
         raise SystemExit("[input] Empty prompt.")
 
+    prompt = wrap_with_memory(prompt, enabled=not args.no_memory)
     created = create_task(prompt, args.profile, api_key)
     task_id = created.get("task_id", "")
     task_url = created.get("task_url", "")

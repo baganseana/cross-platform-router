@@ -15,6 +15,8 @@ import sys
 import urllib.error
 import urllib.request
 
+from _memory import wrap_with_memory
+
 DEFAULT_MODEL = "gpt-4o"  # override with --model (e.g. gpt-4o-mini for cheap, or a newer model)
 API_URL = "https://api.openai.com/v1/chat/completions"
 
@@ -50,6 +52,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Call OpenAI ChatGPT.")
     p.add_argument("prompt", help="Prompt text, or '-' to read from stdin")
     p.add_argument("--model", default=DEFAULT_MODEL, help=f"Default: {DEFAULT_MODEL}")
+    p.add_argument("--no-memory", action="store_true", help="Don't inject shared memory")
     args = p.parse_args()
 
     api_key = os.environ.get("OPENAI_API_KEY")
@@ -60,6 +63,7 @@ def main() -> None:
     if not prompt.strip():
         raise SystemExit("[input] Empty prompt.")
 
+    prompt = wrap_with_memory(prompt, enabled=not args.no_memory)
     print(call_openai(prompt, args.model, api_key))
 
 

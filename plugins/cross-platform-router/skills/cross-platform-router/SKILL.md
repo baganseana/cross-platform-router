@@ -71,6 +71,35 @@ For any non-Claude route:
 - **ChatGPT:** state role + goal + constraints + desired format concisely.
 - **Manus:** give a clear objective, success criteria, constraints/credentials it may need, and the deliverable format. Be explicit about scope and stopping conditions.
 
+## Shared memory (keeps all engines on the same page)
+
+A single `MEMORY.md` (in this skill's folder) is **injected into every engine call** automatically —
+Gemini, ChatGPT, and Manus all receive it, so they share the same facts/preferences as Claude.
+The scripts handle this; pass `--no-memory` to skip injection for a one-off call. The same memory
+can also live server-side in the Cloudflare MCP (Workers KV) so claude.ai web/mobile share it too.
+
+Sections: **About / Business · Preferences & Voice · Active Projects & Decisions · Glossary & People**.
+
+### Initial sync (first time)
+If `MEMORY.md` still has `<placeholder>` lines, run a short interview to populate it — ask about the
+user's business/role, voice preferences, active projects, and key people/terms. Write concise
+one-bullet facts into the matching sections.
+
+### Auto-capture (regular updates)
+When the user states a durable fact, preference, or decision ("we always…", "remember that…",
+"from now on…", "my client X…"), append it to the right section of `MEMORY.md` as a dated bullet.
+Skip one-off/ephemeral details. Confirm briefly what you saved.
+
+### Optional server sync (if using the Cloudflare MCP too)
+Set `ROUTER_MCP_ADMIN_URL` to the Worker's `/<SECRET>/admin/memory` endpoint, then:
+```bash
+DIR="${CLAUDE_PLUGIN_ROOT:-$HOME/.claude}/skills/cross-platform-router/scripts"
+python3 "$DIR/sync_memory.py" push   # local MEMORY.md -> server
+python3 "$DIR/sync_memory.py" pull   # server -> local MEMORY.md
+python3 "$DIR/sync_memory.py" show   # print server memory
+```
+A daily cron tidies the server copy; `pull` afterward to reconcile locally.
+
 ## Required environment variables
 
 This skill needs API keys in the environment (e.g. in `~/.zshrc`). Run `setup_keys.sh` (in the plugin root) once to set them, or add manually:
