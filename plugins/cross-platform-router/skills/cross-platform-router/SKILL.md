@@ -79,4 +79,19 @@ This skill needs API keys in the environment (e.g. in `~/.zshrc`). Run `setup_ke
 - `OPENAI_API_KEY` — platform.openai.com/api-keys. Default model `gpt-4o`.
 - `MANUS_API_KEY` — open.manus.ai (Settings → API). Async create+poll; default profile `manus-1.6`.
 
-If a key is missing, that engine automatically falls back to draft-and-paste mode — the rest still work.
+**These must be the current user's OWN keys.** This skill never ships with keys — it reads them only from the local environment. Each person who installs it supplies their own.
+
+### First-run / missing-key behavior (IMPORTANT)
+
+Before routing to an engine, assume the key may not be set yet. When a script returns `[config] ... not set` or `[not-configured]` (exit code 2), do NOT silently fall back. Instead, **stop and prompt the user to set up their own key**:
+
+1. Tell them which key is missing and that it must be *their own* account's key (they cannot use anyone else's).
+2. Offer to run the setup helper for them:
+   ```bash
+   bash "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/cross-platform-router}/setup_keys.sh"
+   ```
+   (or, if installed as a personal skill, the `setup_keys.sh` in the plugin root)
+3. Point them to where to get the key: Gemini → aistudio.google.com/apikey · OpenAI → platform.openai.com/api-keys · Manus → open.manus.ai (Settings → API).
+4. Only after they decline setup, offer the draft-and-paste fallback as a stopgap.
+
+If a key is genuinely absent and the user doesn't want to add it, that engine falls back to draft-and-paste mode — the others still work.
