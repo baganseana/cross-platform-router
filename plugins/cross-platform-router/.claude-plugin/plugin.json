@@ -1,0 +1,7 @@
+{
+  "name": "cross-platform-router",
+  "version": "1.0.0",
+  "description": "Routes tasks to the best AI engine — Claude, Gemini (research), ChatGPT (catch-all/second opinion), or Manus (autonomous tasks). Tries the real API and falls back to a paste-ready prompt.",
+  "author": { "name": "Sean Bagan" },
+  "keywords": ["router", "gemini", "openai", "chatgpt", "manus", "multi-model", "research"]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "cross-platform-router-marketplace",
+  "owner": { "name": "Sean Bagan" },
+  "plugins": [
+    {
+      "name": "cross-platform-router",
+      "source": "./plugins/cross-platform-router",
+      "description": "Routes tasks to the best AI engine — Claude, Gemini, ChatGPT, or Manus."
+    }
+  ]
+}
